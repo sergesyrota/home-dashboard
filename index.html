@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/highcharts.js"></script>
+    <script src="js/highcharts-more.js"></script>
+    <script src="js/modules/exporting.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+    $.ajaxSetup({
+        async: false
+    });
+    function sendAction(action) {
+        $.getJSON('/dashboard/rs485-action.php?action='+action, function(response){
+            if (response.status == 0) { // success
+                alert('OK');
+            } else {
+                alert(response.error);
+            }
+        })
+        .error(function() { alert("Error sending this request"); })
+    }
+    </script>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h4 style="text-align:center;">Temperatures</h4>
+          <p>Leah: <span id="leah-room-temperature">--</span> &deg;F</p>
+          <p>Parents: <span id="parents-room-temperature">--</span> &deg;F</p>
+          <script>
+              var temperatures;
+              $.getJSON('/dashboard/getJsonData.php?field=HouseTemps', function(response){
+                  temperatures = response;
+              });
+              var leahTemp, parentsTemp;
+              function getTempText(data) {
+                var res = 'Unknown';
+                if (data.age < 300) {
+                    res = 32 + (Math.round(data.temp*9/5)/10);
+                }
+                return(res);
+              }
+              $('#leah-room-temperature').html(getTempText(temperatures.leah));
+              $('#parents-room-temperature').html(getTempText(temperatures.parents));
+          </script>
+          <!--p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p-->
+        </div>
+        <div class="col-md-3">
+          <div id="water-main-instant-flow" style="min-width: 250px; max-width: 100%; min-height: 250px; margin: 0 auto"></div>
+          <p><a class="btn btn-default" role="button" href="javascript:resetMeter();">Reset</a> Total water usage: <span id="total-water-usage">0</span> gal</p>
+          <script>
+          function showValveButtons() {
+              $('#show-options-link').hide();
+              $('#valve-buttons').show();
+          }
+          </script>
+          <p>Valve action: <a class="btn" id="show-options-link" href="javascript:showValveButtons();">Show options</a><span id="valve-buttons" style="display:none;"><a class="btn btn-success" role="button" href="javascript:sendAction('OpenWaterMain');">Open</a> <a class="btn btn-danger" role="button" href="javascript:sendAction('CloseWaterMain');">Close</a></span></p>
+          <script>
+              waterMeterStart = 0;
+              lastWaterMeterReading = 0;
+              function resetMeter() {
+                  waterMeterStart=lastWaterMeterReading;
+                  $('#total-water-usage').text('0');
+              }
+          </script>
+          <script src="js/graphs/water-main-instant-flow.js"></script>
+        </div>
+        <div class="col-md-3">
+          <div id="sump-water-level" style="min-width: 250px; max-width: 100%; min-height: 250px; margin: 0 auto"></div>
+          <script src="js/graphs/sump-pit.js"></script>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2014</p>
+      </footer>
+    </div> <!-- /container -->
+
+  </body>
+</html>
