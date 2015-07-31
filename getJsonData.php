@@ -21,6 +21,17 @@ switch ($_GET['field']) {
         parse_str($rs->command('Bench', 'getSens2'), $parents);
         echo json_encode(['leah' => $leah, 'parents' => $parents]);
         break;
+    case 'WateringSystems':
+        $data = $rs->command('Sprinkler1', 'statusValve:0');
+        $res = ['status' => 'CLOSED'];
+        if (preg_match('%(OPENED); (\d+)s left%', $data, $matches)) {
+            $res = [
+                'status' => $matches[1],
+                'timeLeft' => $matches[2],
+            ];
+        }
+        echo json_encode($res);
+        break;
     default:
         echo json_encode([]);
 }

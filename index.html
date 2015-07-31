@@ -26,8 +26,13 @@
     $.ajaxSetup({
         async: false
     });
-    function sendAction(action) {
-        $.getJSON('/dashboard/rs485-action.php?action='+action, function(response){
+    function sendAction(action, params) {
+        query = new Object();
+        if (typeof params !== 'undefined') {
+            query = params;
+        }
+        query.action = action;
+        $.getJSON('/dashboard/rs485-action.php?'+$.param(query), function(response){
             if (response.status == 0) { // success
                 alert('OK');
             } else {
@@ -43,24 +48,25 @@
     <div class="container">
       <div class="row">
         <div class="col-md-3">
-          <h4 style="text-align:center;">Temperatures</h4>
-          <p>Leah: <span id="leah-room-temperature">--</span> &deg;F</p>
-          <p>Parents: <span id="parents-room-temperature">--</span> &deg;F</p>
+          <h4 style="text-align:center;">Watering systems</h4>
+          <p>Fern: <span id="fern-status">--</span></p>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'closeValve:0'});">CLOSE</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:10'});">10s</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:60'});">1m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:600'});">10m</a>
           <script>
-              var temperatures;
-              $.getJSON('/dashboard/getJsonData.php?field=HouseTemps', function(response){
-                  temperatures = response;
-              });
-              var leahTemp, parentsTemp;
-              function getTempText(data) {
-                var res = 'Unknown';
-                if (data.age < 300) {
-                    res = 32 + (Math.round(data.temp*9/5)/10);
+            function refreshWatering() {
+                var data;
+                $.getJSON('/dashboard/getJsonData.php?field=WateringSystems', function(response){
+                    data = response;
+                });
+                $('#fern-status').html(data.status + (data.status == 'OPENED' ? ' ('+data.timeLeft+'s left)' : ''));
+                if (data.status == 'OPENED') {
+                    
                 }
-                return(res);
-              }
-              $('#leah-room-temperature').html(getTempText(temperatures.leah));
-              $('#parents-room-temperature').html(getTempText(temperatures.parents));
+            }
+            refreshWatering();
+            setInterval(refreshWatering, 2000);
           </script>
           <!--p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p-->
         </div>

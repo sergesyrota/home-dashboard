@@ -20,6 +20,9 @@ switch ($_GET['action']) {
     case 'OpenWaterMain':
         sendCommand($rs, 'WtrMn', 'valveOpen');
         break;
+    case 'rawCommand':
+        sendCommand($rs, $_GET['device'], $_GET['command']);
+        break;
     default:
         echo json_encode(['status' => STATUS_ERROR, 'error' => 'Action not recognized']);
 }
