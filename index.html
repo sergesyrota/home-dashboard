@@ -50,20 +50,27 @@
         <div class="col-md-3">
           <h4 style="text-align:center;">Watering systems</h4>
           <p>Fern: <span id="fern-status">--</span></p>
+          <p>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'closeValve:0'});">CLOSE</a>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:10'});">10s</a>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:60'});">1m</a>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:600'});">10m</a>
+          </p>
+          <p>Raised Flower Bed: <span id="raised-flower-status">--</span></p>
+          <p>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'closeValve:0'});">CLOSE</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:10'});">10s</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:60'});">1m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:600'});">10m</a>
+          </p>
           <script>
             function refreshWatering() {
                 var data;
                 $.getJSON('/dashboard/getJsonData.php?field=WateringSystems', function(response){
                     data = response;
                 });
-                $('#fern-status').html(data.status + (data.status == 'OPENED' ? ' ('+data.timeLeft+'s left)' : ''));
-                if (data.status == 'OPENED') {
-                    
-                }
+                $('#fern-status').html(data.fern.status + (data.fern.status == 'OPENED' ? ' ('+data.fern.timeLeft+'s left)' : ''));
+                $('#raised-flower-status').html(data.raisedFlower.status + (data.raisedFlower.status == 'OPENED' ? ' ('+data.raisedFlower.timeLeft+'s left)' : ''));
             }
             refreshWatering();
             setInterval(refreshWatering, 2000);

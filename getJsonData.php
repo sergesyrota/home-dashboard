@@ -22,16 +22,34 @@ switch ($_GET['field']) {
         echo json_encode(['leah' => $leah, 'parents' => $parents]);
         break;
     case 'WateringSystems':
-        $data = $rs->command('Sprinkler1', 'statusValve:0');
-        $res = ['status' => 'CLOSED'];
-        if (preg_match('%(OPENED); (\d+)s left%', $data, $matches)) {
-            $res = [
-                'status' => $matches[1],
-                'timeLeft' => $matches[2],
-            ];
+        $systems = [
+            'fern' => [
+                'device' => 'Sprinkler1',
+                'command' => 'statusValve:0'
+            ],
+            'raisedFlower' => [
+                'device' => 'Sprinkler2',
+                'command' => 'statusValve:0'
+            ],
+        ];
+        $data = [];
+        foreach ($systems as $name=>$address) {
+            $data[$name] = getWateringSystemData($rs, $address['device'], $address['command']);
         }
-        echo json_encode($res);
+        echo json_encode($data);
         break;
     default:
         echo json_encode([]);
+}
+
+function getWateringSystemData($rs, $device, $command) {
+    $data = $rs->command($device, $command);
+    $res = ['status' => 'CLOSED'];
+    if (preg_match('%(OPENED); (\d+)s left%', $data, $matches)) {
+        $res = [
+            'status' => $matches[1],
+            'timeLeft' => $matches[2],
+        ];
+    }
+    return $res;
 }
