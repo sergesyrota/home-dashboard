@@ -15,6 +15,13 @@
             $('#home-pane').hide();
             $('#sos-pane').hide();
         }
+        function wifiVote(rating) {
+            $('#wifi-vote-ok').show();
+            setTimeout(function(){
+                $('#wifi-vote-ok').fadeOut();
+            }, 200);
+            $.get('wifi-answer.php?' + rating);
+        }
     </script>
 </head>
 <body>
@@ -23,6 +30,12 @@
   <div class="navbar-header">
     <a class="navbar-sos" href="javascript:showPane('#home-pane');"><img src="graphics/nav/home.png" height=60 /></a>
     <a class="navbar-sos" href="javascript:showPane('#sos-pane');"><img src="graphics/nav/sos.gif" width=125 /></a>
+    <span class="navbar-sos" style='font-size:22pt; position:absolute; right: 0px; top:0px;'>
+        WiFi rating:
+        <a href="javascript:wifiVote('up');"><img src="graphics/thumbs-up.png" height=60 /></a>
+        <a href="javascript:wifiVote('down');"><img src="graphics/thumbs-down.png" height=60 /></a>
+        <div id='wifi-vote-ok' style="position:absolute; right:0px; top:0px; background-color:#ccc; width:150px; height:60px; text-align:center; font-size:30pt; display:none;">OK</div>
+    </snap>
   </div>
 </nav>
 <div id="home-pane" style="font-size:12pt; display: none;">
