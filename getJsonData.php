@@ -38,6 +38,10 @@ switch ($_GET['field']) {
         }
         echo json_encode($data);
         break;
+    case 'MasterVent':
+        $data = $rs->command('MasterVent1', 'getPosition');
+        echo json_encode(['angle' => $data]);
+        break;
     default:
         echo json_encode([]);
 }

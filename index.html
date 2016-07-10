@@ -58,16 +58,16 @@
           <p>Fern: <span id="fern-status">--</span></p>
           <p>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'closeValve:0'});">CLOSE</a>
-          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:10'});">10s</a>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:60'});">1m</a>
-          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:600'});">10m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:3600'});">60m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler1', command:'openValve0:7200'});">2h</a>
           </p>
           <p>Raised Flower Bed: <span id="raised-flower-status">--</span></p>
           <p>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'closeValve:0'});">CLOSE</a>
-          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:10'});">10s</a>
           <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:60'});">1m</a>
-          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:600'});">10m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:3600'});">60m</a>
+          <a class="btn btn-default" role="button" href="javascript:sendAction('rawCommand', {device:'Sprinkler2', command:'openValve0:7200'});">2h</a>
           </p>
           <script>
             function refreshWatering() {
@@ -80,6 +80,34 @@
             }
             refreshWatering();
             setInterval(refreshWatering, 2000);
+          </script>
+          <p>
+          Vent:
+            <a class="btn btn-default" role="button" href="javascript:setVent(-30);">-30</a>
+            <a class="btn btn-default" role="button" href="javascript:setVent(-10);">-10</a>
+            <a class="btn btn-default" role="button" href="javascript:setVent(-5);">-5</a>
+            <span id="current-vent-position" style="font-weight:bold;">###</span>
+            <a class="btn btn-default" role="button" href="javascript:setVent(5);">+5</a>
+            <a class="btn btn-default" role="button" href="javascript:setVent(10);">+10</a>
+            <a class="btn btn-default" role="button" href="javascript:setVent(30);">+30</a>
+          </p>
+          <script>
+            function setVent(increment) {
+                var target=parseInt($('#current-vent-position').html()) + increment;
+                if (target>90) target=90;
+                if (target<0) target=0;
+                sendAction('rawCommand', {device:'MasterVent1', command:'setDegrees:'+target});
+                setInterval(refreshVent, 2000);
+            }
+            function refreshVent() {
+                var data;
+                $.getJSON('/dashboard/getJsonData.php?field=MasterVent', function(response){
+                    data = response;
+                });
+                $('#current-vent-position').html(data.angle);
+            }
+            refreshVent();
+            setInterval(refreshVent, 60000);
           </script>
           <!--p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p-->
         </div>
