@@ -17,7 +17,7 @@ class rs485
                 throw new Exception("Gearman request timed out");
                 break;
             default:
-                throw new Exception("Gearman error #{$this->getErrno()}: {$this->client->error()}");
+                throw new Exception("Gearman error #{$this->client->getErrno()}: {$this->client->error()}");
         }
         preg_match('%\x02>(.*)\n%', $res, $matches);
         if (!isset($matches[1])) {
